@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Clearly-query by cofiem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Clearly-query</h1>
+      <h2 class="project-tagline">A library for constructing an sql query from a hash.</h2>
+      <a href="https://github.com/cofiem/clearly-query" class="btn">View on GitHub</a>
+      <a href="https://github.com/cofiem/clearly-query/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/cofiem/clearly-query/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="clearly-query" class="anchor" href="#clearly-query" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clearly Query</h1>
+
+<p>A library for constructing an sql query from a hash.</p>
+
+<p>Uses <a href="https://github.com/rails/arel">Arel</a> and <a href="https://github.com/rails/rails/tree/master/activerecord">ActiveRecord</a>.</p>
+
+<h2>
+<a id="project-status" class="anchor" href="#project-status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Status</h2>
+
+<p><a href="https://travis-ci.org/cofiem/clearly-query"><img src="https://travis-ci.org/cofiem/clearly-query.svg?branch=master" alt="Build Status"></a>
+<a href="https://gemnasium.com/cofiem/clearly-query"><img src="https://gemnasium.com/cofiem/clearly-query.svg" alt="Dependency Status"></a>
+<a href="https://codeclimate.com/github/cofiem/clearly-query"><img src="https://codeclimate.com/github/cofiem/clearly-query/badges/gpa.svg" alt="Code Climate"></a>
+<a href="https://codeclimate.com/github/cofiem/clearly-query/coverage"><img src="https://codeclimate.com/github/cofiem/clearly-query/badges/coverage.svg" alt="Test Coverage"></a>
+<a href="https://inch-ci.org/github/cofiem/clearly-query"><img src="https://inch-ci.org/github/cofiem/clearly-query.svg?branch=master" alt="Documentation Status"></a></p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'clearly-query'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install clearly-query
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>There are two main public classes in this gem. 
+The Definition class makes use of a settings declared in a model.
+The Composer converts a hash of options into an Arel query.</p>
+
+<h3>
+<a id="clearlyquerydefinition" class="anchor" href="#clearlyquerydefinition" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="lib/clearly-query/definition.rb">ClearlyQuery::Definition</a>
+</h3>
+
+<p>Contains the query specification for ActiveRecord models.</p>
+
+<p>For example:</p>
+
+<pre><code>ClearlyQuery::Definition.new(Customer, Customer.clearly_query_def)
+</code></pre>
+
+<p>and</p>
+
+<pre><code># model/customer.rb
+  def self.clearly_query_def
+    {
+        fields: {
+            valid: [:name, :last_contact_at],
+            text: [:name],
+            mappings: []
+        },
+        associations: [
+            {
+                join: Order,
+                on: Order.arel_table[:customer_id].eq(Customer.arel_table[:id]),
+                available: true,
+                associations: []
+            }
+        ],
+        defaults: {
+            order_by: :created_at,
+            direction: :desc
+        }
+    }
+  end
+</code></pre>
+
+<h3>
+<a id="clearlyquerycomposer" class="anchor" href="#clearlyquerycomposer" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="lib/clearly-query/composer.rb">ClearlyQuery::Composer</a>
+</h3>
+
+<p>Used to construct an Arel query from a hash of options.</p>
+
+<p>For example:</p>
+
+<pre><code>composer = ClearlyQuery::Composer.from_active_record
+composer.query(Customer, {name: {contains: 'test'}})
+</code></pre>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li><a href="https://github.com/cofiem/clearly-query/fork">Fork this repo</a></li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create a new <a href="https://github.com/cofiem/clearly-query/compare">pull request</a>
+</li>
+</ol>
+
+<h2>
+<a id="more-information-about-arel" class="anchor" href="#more-information-about-arel" aria-hidden="true"><span class="octicon octicon-link"></span></a>More Information about Arel</h2>
+
+<ul>
+<li><a href="http://robots.thoughtbot.com/using-arel-to-compose-sql-queries">Using Arel to Compose SQL Queries</a></li>
+<li><a href="http://jpospisil.com/2014/06/16/the-definitive-guide-to-arel-the-sql-manager-for-ruby.html">The definitive guide to Arel, the SQL manager for Ruby</a></li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/cofiem/clearly-query">Clearly-query</a> is maintained by <a href="https://github.com/cofiem">cofiem</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-69270503-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
